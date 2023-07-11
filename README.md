@@ -42,4 +42,4 @@ Therefore I will give priority, and prefer if most PRs and issues will be in rel
 ## NOTE:
 New features are still welcome, just again, they have less priority. This is not a primary project of mine, and I don't plan to actively maintain it beyond using it for conducting research.
 
-[^1]: Also known as (ExecutionSimulation)[https://bitbucket.org/galk-opensource/executionsimulation/src/master/]
+[^1]: Also known as [ExecutionSimulation](https://bitbucket.org/galk-opensource/executionsimulation/src/master/).
