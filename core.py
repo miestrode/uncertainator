@@ -120,22 +120,25 @@ Effect = list
 
 
 def assign_probabilities(core_effect: Effect, minor_effects: set[list[Symbol]]) -> list[float | Effect]:
-    minor_effect_values = [randfloat() for _ in range(len(minor_effects))]
+    if minor_effects:
+        minor_effect_values = [randfloat() for _ in range(len(minor_effects))]
 
-    total = sum(minor_effect_values)
-    scale_factor = SELECT_CORE_EFFECT / total
+        total = sum(minor_effect_values)
+        scale_factor = SELECT_CORE_EFFECT / total
 
-    return [SELECT_CORE_EFFECT, core_effect] + list(
-        chain(
-            *[
-                [
-                    floor(probability * scale_factor * 10**PRECISION) / 10**PRECISION,
-                    effect,
+        return [SELECT_CORE_EFFECT, core_effect] + list(
+            chain(
+                *[
+                    [
+                        floor(probability * scale_factor * 10**PRECISION) / 10**PRECISION,
+                        effect,
+                    ]
+                    for probability, effect in zip(minor_effect_values, minor_effects)
                 ]
-                for probability, effect in zip(minor_effect_values, minor_effects)
-            ]
+            )
         )
-    )
+    else:
+        return [SELECT_CORE_EFFECT, core_effect]
 
 
 def uncertainate_domain(domain: list, injection_count: int) -> Optional[list[Symbol]]:
