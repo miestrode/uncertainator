@@ -84,11 +84,7 @@ def injected_predicate_powerset(
 def predicate_subset_as_effect(
     subset: list[Symbol], predicates: list[Symbol]
 ) -> list[Symbol | list[Symbol] | list[Symbol | list[Symbol]]]:
-    return (
-        [Symbol("and")]
-        + [[predicate] for predicate in subset]
-        + list(chain([Symbol("not"), [predicate]] for predicate in set(predicates) - set(subset)))
-    )
+    return [Symbol("and")] + [[predicate] for predicate in subset]
 
 
 Action = list
@@ -175,11 +171,10 @@ def uncertainate_problem(problem: list, predicates: list[Symbol]) -> bool:
         case None:
             return False
         case goal:
-            goal[GOAL_CONDITION_INDEX] = [
-                Symbol("and"),
-                goal[GOAL_CONDITION_INDEX],
-                effect,
-            ]
+            if goal[GOAL_CONDITION_INDEX][0] == Symbol("and"):
+                goal[GOAL_CONDITION_INDEX] = goal[GOAL_CONDITION_INDEX] + effect[1:]
+            else:
+                goal[GOAL_CONDITION_INDEX] = [Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
 
     match eager_shallow_search(problem[1:], lambda expression: car(expression) == Symbol(":init")):
         case None:
