@@ -129,7 +129,7 @@ def assign_probabilities(core_effect: Effect, minor_effects: set[list[Symbol]]) 
         chain(
             *[
                 [
-                    floor(probability * scale_factor() * 10**PRECISION) / 10**PRECISION,
+                    floor(probability * scale_factor * 10**PRECISION) / 10**PRECISION,
                     effect,
                 ]
                 for probability, effect in zip(minor_effect_values, minor_effects)
