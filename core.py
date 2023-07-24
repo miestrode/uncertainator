@@ -143,10 +143,13 @@ def uncertainate_problem(problem: list, predicates: list[sexpdata.Symbol]) -> bo
         case None:
             return False
         case goal:
-            if goal[GOAL_CONDITION_INDEX][0] == sexpdata.Symbol("and"):
-                goal[GOAL_CONDITION_INDEX] = goal[GOAL_CONDITION_INDEX] + effect[1:]
-            else:
-                goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
+            match goal[GOAL_CONDITION_INDEX][0]:
+                case sexpdata.Symbol("and"):
+                    goal[GOAL_CONDITION_INDEX] = goal[GOAL_CONDITION_INDEX] + effect[1:]
+                case [sexpdata.Symbol(_)]:
+                    goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX][0], effect[1:]]
+                case _:
+                    goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
 
     match eager_shallow_search(problem[1:], lambda expression: sexpdata.car(expression) == sexpdata.Symbol(":init")):
         case None:
