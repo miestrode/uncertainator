@@ -14,6 +14,7 @@ ACTION_EFFECT_INDEX = 7
 INJECTION_PREFIX = "injected"
 FILLER = "-"
 SELECT_CORE_EFFECT = 0.5
+SELECT_MINOR_EFFECT = 0.3
 
 
 def activate_with_probability(probability: float) -> bool:
@@ -97,7 +98,7 @@ def assign_probabilities(core_effect: Effect, minor_effects: set[list[sexpdata.S
         minor_effect_values = [random.random() for _ in range(len(minor_effects))]
 
         total = sum(minor_effect_values)
-        scale_factor = SELECT_CORE_EFFECT / total
+        scale_factor = SELECT_MINOR_EFFECT / total
 
         return [SELECT_CORE_EFFECT, core_effect] + list(
             itertools.chain(
@@ -143,13 +144,12 @@ def uncertainate_problem(problem: list, predicates: list[sexpdata.Symbol]) -> bo
         case None:
             return False
         case goal:
-            match goal[GOAL_CONDITION_INDEX][0]:
-                case sexpdata.Symbol("and"):
-                    goal[GOAL_CONDITION_INDEX] = goal[GOAL_CONDITION_INDEX] + effect[1:]
-                case [sexpdata.Symbol(_)]:
-                    goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX][0], effect[1:]]
-                case _:
-                    goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
+            if goal[GOAL_CONDITION_INDEX][0] == sexpdata.Symbol("and"):
+                goal[GOAL_CONDITION_INDEX] += effect[1:]
+            elif len(goal[GOAL_CONDITION_INDEX]) == 1:
+                goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX]] + effect[1:]
+            else:
+                goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
 
     match eager_shallow_search(problem[1:], lambda expression: sexpdata.car(expression) == sexpdata.Symbol(":init")):
         case None:
