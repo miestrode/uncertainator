@@ -14,7 +14,7 @@ ACTION_EFFECT_INDEX = 7
 INJECTION_PREFIX = "injected"
 FILLER = "-"
 SELECT_CORE_EFFECT = 0.5
-SELECT_MINOR_EFFECT = 0.3
+SELECT_MINOR_EFFECT = 0.45
 
 
 def activate_with_probability(probability: float) -> bool:
@@ -146,7 +146,7 @@ def uncertainate_problem(problem: list, predicates: list[sexpdata.Symbol]) -> bo
         case goal:
             if goal[GOAL_CONDITION_INDEX][0] == sexpdata.Symbol("and"):
                 goal[GOAL_CONDITION_INDEX] += effect[1:]
-            elif len(goal[GOAL_CONDITION_INDEX]) == 1:
+            elif all([type(part) is not list for part in goal[GOAL_CONDITION_INDEX]]):
                 goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX]] + effect[1:]
             else:
                 goal[GOAL_CONDITION_INDEX] = [sexpdata.Symbol("and"), goal[GOAL_CONDITION_INDEX], effect]
